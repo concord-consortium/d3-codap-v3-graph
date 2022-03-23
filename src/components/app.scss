@@ -8,6 +8,21 @@
   align-items: center;
   justify-content: center;
   color: #242424;
-  background-color: #dfdfdf;
+  //background-color: #dfdfdf;
 }
 
+.d3Drawing text {
+  fill: black;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+.dot {
+  fill: #e89376;
+  stroke: white;
+  cursor: pointer;
+}
+
+.dot-highlighted {
+  fill: steelblue;
+}

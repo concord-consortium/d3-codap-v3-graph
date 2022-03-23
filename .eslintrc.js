@@ -1,4 +1,13 @@
+
+
+// eslint-disable-next-line no-undef
 module.exports = {
+  // 'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
+  "no-mixed-spaces-and-tabs": [0],
+  "no-tabs": 0,
+  "skipBlankLines": 0,
+  "ignoreComments": 0,
+  "no-trailing-spaces": [2, { "skipBlankLines": true }],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2018,
@@ -41,12 +50,12 @@ module.exports = {
     "eol-last": "warn",
     "eqeqeq": ["error", "smart"],
     "eslint-comments/no-unused-disable": "warn",
-    "jsx-quotes": ["error", "prefer-double"],
+    // "jsx-quotes": ["error", "prefer-double"],
     "no-debugger": "off",
     "no-duplicate-imports": "error",
     "no-sequences": "error",
     "no-shadow": "off", // superceded by @typescript-eslint/no-shadow
-    "no-tabs": "error",
+    // "no-tabs": "error",
     "no-unneeded-ternary": "error",
     "no-unused-expressions": ["error", { allowShortCircuit: true }],
     "no-unused-vars": "off",  // superceded by @typescript-eslint/no-unused-vars
@@ -62,7 +71,7 @@ module.exports = {
     "prefer-regex-literals": "error",
     "prefer-rest-params": "error",
     "prefer-spread": "error",
-    "quotes": ["error", "double", { allowTemplateLiterals: true, avoidEscape: true }],
+    // "quotes": ["error", "double", { allowTemplateLiterals: true, avoidEscape: true }],
     "radix": "error",
     "react/jsx-closing-tag-location": "error",
     "react/jsx-handler-names": "off",
@@ -72,7 +81,9 @@ module.exports = {
     "react/no-unsafe": ["off", { checkAliases: true }],
     "react/no-unused-state": "error",
     "react/prop-types": "off",
+    /* eslint-disable semi */
     "semi": ["error", "always"]
+    /* eslint-enable semi */
   },
   overrides: [
     { // rules specific to Jest tests
@@ -111,7 +122,7 @@ module.exports = {
       rules: {
         "@typescript-eslint/no-require-imports": "off",
         "@typescript-eslint/no-var-requires": "off",
-        "quotes": ["error", "single", { allowTemplateLiterals: true, avoidEscape: true }],
+        // "quotes": ["error", "single", { allowTemplateLiterals: true, avoidEscape: true }],
       }
     }
   ]

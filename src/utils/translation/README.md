@@ -1,6 +1,6 @@
-# Starter Projects Localization
+# D3CodapV3Graph Localization
 
-The modules within `utils/translation` can be used to add text localization to a starter-projects based application.
+The modules within `utils/translation` can be used to add text localization to a d3-codap-v3-graph based application.
 
 ### How to use
 

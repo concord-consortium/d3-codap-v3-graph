@@ -1,10 +1,10 @@
 {
-  "name": "starter-projects",
+  "name": "d3-codap-v3-graph",
   "version": "0.0.1",
   "description": "Concord Consortium starter projects",
   "main": "index.js",
   "jest": {
-    "testURL": "https://starter-projects.unexisting.url.com",
+    "testURL": "https://d3-codap-v3-graph.unexisting.url.com",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -55,14 +55,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/concord-consortium/starter-projects.git"
+    "url": "git+https://github.com/concord-consortium/d3-codap-v3-graph.git"
   },
   "author": "Concord Consortium",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/concord-consortium/starter-projects/issues"
+    "url": "https://github.com/concord-consortium/d3-codap-v3-graph/issues"
   },
-  "homepage": "https://github.com/concord-consortium/starter-projects#readme",
+  "homepage": "https://github.com/concord-consortium/d3-codap-v3-graph#readme",
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": true,
@@ -119,6 +119,8 @@
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
+    "@types/d3": "^7.1.0",
+    "d3": "^7.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
