@@ -1,20 +1,33 @@
 #app {
+  /*
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   display: flex;
+  */
   align-items: center;
   justify-content: center;
   color: #242424;
+  margin: 20px;
   //background-color: #dfdfdf;
+}
+
+.app {
+  width: 100%;
+  height: 100vh;
+}
+
+svg {
+  display: block;
+  background: #f7f7f7;
+  overflow: visible;
 }
 
 .d3Drawing text {
   fill: black;
   font: 10px sans-serif;
-  text-anchor: end;
 }
 
 .dot {
