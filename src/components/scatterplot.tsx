@@ -6,9 +6,7 @@ import {drag, format, select} from "d3";
 export const ScatterDots = (props: {
 	svgRef: React.RefObject<SVGSVGElement>, dots: graphingTypes.scatterDotsProps
 }) => {
-	const xScale = props.dots.xScale,
-		yScale = props.dots.yScale,
-		defaultRadius = 5,
+	const defaultRadius = 5,
 		dragRadius = 10,
 		keyFunc = (d: graphingTypes.worldData) => d.caseID,
 		[data, setData] = useState(props.dots.scatterData),
@@ -36,8 +34,9 @@ export const ScatterDots = (props: {
 
 		function onDrag(event: { dx: number; dy: number; }, d: any) {
 			if (event.dx !== 0 || event.dy !== 0) {
-				const deltaX = xScale.invert(event.dx) - xScale.invert(0),
-					deltaY = yScale.invert(event.dy) - yScale.invert(0)
+				const deltaX = props.dots.xScale.invert(event.dx) - props.dots.xScale.invert(0),
+					deltaY = props.dots.yScale.invert(event.dy) - props.dots.yScale.invert(0)
+				// console.log(`dx = ${event.dx}; deltaX = ${deltaX}; d.x = ${d.x}`)
 				// eslint-disable-next-line @typescript-eslint/no-shadow
 				setData(data => {
 						return data.map((datum) =>
@@ -51,6 +50,17 @@ export const ScatterDots = (props: {
 		}
 
 		function onDragEnd() {
+/*
+			// eslint-disable-next-line @typescript-eslint/no-shadow
+			setData(data => {
+					return data.map((datum) =>
+						datum.caseID === dragID
+							? {...datum, x: x1, y: y1}
+							: {...datum}
+					)
+				}
+			)
+*/
 			select(this)
 				.transition()
 				.attr('r', defaultRadius)
@@ -73,16 +83,16 @@ export const ScatterDots = (props: {
 						.attr('transform', props.dots.transform)
 						.attr('class', 'dot')
 						.attr("r", defaultRadius)
-						.attr('cx', xScale.range()[1] / 2)
-						.attr('cy', yScale.range()[0] / 2)
+						.attr('cx', props.dots.xScale.range()[1] / 2)
+						.attr('cy', props.dots.yScale.range()[0] / 2)
 						.property('caseID', (d: any) => d.caseID)
 						.transition()
 						.delay((d: any, i: number) => {
 							return i * delayInterval
 						})
 						.duration(1000)
-						.attr("cx", (d: { x: any; }) => xScale(d.x))
-						.attr("cy", (d: { y: any; }) => yScale(d.y))
+						.attr("cx", (d: { x: any; }) => props.dots.xScale(d.x))
+						.attr("cy", (d: { y: any; }) => props.dots.yScale(d.y))
 						.selection()
 						.append('title')
 						.text((d: any) => `(${float(d.x)}, ${float(d.y)}, caseID: ${d.caseID}`)
@@ -93,8 +103,8 @@ export const ScatterDots = (props: {
 				},
 				(update) => {
 					update.classed('dot-highlighted', (d: { selected: boolean }) => (d.selected))
-						.attr('cx', (d: { x: any; }) => xScale(d.x))
-						.attr('cy', (d: { y: any; }) => yScale(d.y))
+						.attr('cx', (d: { x: any; }) => props.dots.xScale(d.x))
+						.attr('cy', (d: { y: any; }) => props.dots.yScale(d.y))
 						.select('title')
 						.text((d: any) => `(${float(d.x)}, ${float(d.y)}, caseID: ${d.caseID}`)
 				},
@@ -104,7 +114,7 @@ export const ScatterDots = (props: {
 						.remove()
 				}
 			)
-	}, [data, xScale, yScale, props.dots.transform, props.svgRef])
+	}, [data, props.dots.transform, props.svgRef, props.dots, props.dots.xScale, props.dots.yScale])
 
 	return (
 		<g className='dots' ref={ref}/>
