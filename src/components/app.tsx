@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useRef, useState} from "react";
 import {
 	scaleLinear, range, extent, randomNormal, randomUniform
 } from "d3";
@@ -13,10 +13,6 @@ import "./app.scss";
 const
 	playData: graphingTypes.worldData[] = range(1000).map((n) => {
 		return {
-/*
-			x: n,
-			y: n,
-*/
 			x: randomUniform(0, 200)(),
 			y: randomNormal(10, 2)(),
 			caseID: n,
@@ -24,25 +20,35 @@ const
 		}
 	}),
 	margin = ({top: 10, right: 30, bottom: 30, left: 60}),
-	x = scaleLinear(),
+	x = scaleLinear()
+		.domain(extent(playData, d => d.x) as [number, number]).nice(),
 	y = scaleLinear()
+		.domain(extent(playData, d => d.y) as [number, number]).nice()
 
 export function App() {
 
 	const
 		svgRef = useRef() as React.RefObject<SVGSVGElement>,
 		{width, height, ref} = useResizeDetector(),
+		tWidth = 0.8 * (width || 300),
+		tHeight = 0.8 * (height || 500)
+
+	x.range([0, tWidth])
+	y.range([tHeight, 0])
+
+	const [xDomain, setXDomain] = useState(x.domain()),
+		[yDomain, setYDomain] = useState(y.domain()),
+
 		dotsProps: graphingTypes.scatterDotsProps = {
 			scatterData: playData,
 			xScale: x,
 			yScale: y,
+			xDomain,
+			yDomain,
 			transform: `translate(${margin.left}, 0)`
 		}
 
-	x.domain(extent(playData, d => d.x) as [number, number]).nice()
-		.range([0, 0.8 * (width || 300)])
-	y.domain(extent(playData, d=>d.y) as [number, number]).nice()
-		.range([0.8 * (height || 500), 0])
+	console.log(`In app render xDomain = ${x.domain()}`)
 
 	return (
 		<div className='app' ref={ref}>
@@ -53,7 +59,10 @@ export function App() {
 								{
 									orientation: 'left',
 									scaleLinear: y,
-									transform: `translate(${margin.left}, 0)`
+									domain: yDomain,
+									setDomain: setYDomain,
+									transform: `translate(${margin.left}, 0)`,
+									length: tHeight
 								}
 							}
 				/>
@@ -62,11 +71,14 @@ export function App() {
 								{
 									orientation: 'bottom',
 									scaleLinear: x,
-									transform: `translate(${margin.left}, ${0.8 * (height || 500)})`
+									domain: xDomain,
+									setDomain: setXDomain,
+									transform: `translate(${margin.left}, ${tHeight})`,
+									length: tWidth
 								}
 							}
 				/>
-				{ height !== undefined && width !== undefined ? (
+				{height !== undefined && width !== undefined ? (
 					<ScatterDots
 						svgRef={svgRef}
 						dots={dotsProps}/>

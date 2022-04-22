@@ -14,14 +14,20 @@
   //background-color: #dfdfdf;
 }
 
+.axis {
+  //background-color: white;
+}
+
 .app {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
 }
 
 svg {
   display: block;
-  background: #f7f7f7;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(247, 247, 247, 0.4);
   overflow: visible;
 }
 
@@ -38,4 +44,10 @@ svg {
 
 .dot-highlighted {
   fill: steelblue;
+}
+
+.dragRect {
+  fill: #e38e71;
+  fill-opacity: 0.4;
+  cursor: grab;
 }

@@ -10,7 +10,9 @@ export const ScatterDots = (props: {
 		dragRadius = 10,
 		keyFunc = (d: graphingTypes.worldData) => d.caseID,
 		[data, setData] = useState(props.dots.scatterData),
-		ref = useRef() as React.RefObject<SVGSVGElement>
+		ref = useRef() as React.RefObject<SVGSVGElement>,
+		xScale = props.dots.xScale,
+		yScale = props.dots.yScale
 
 	useEffect(() => {
 		const float = format('.1f')
@@ -50,17 +52,6 @@ export const ScatterDots = (props: {
 		}
 
 		function onDragEnd() {
-/*
-			// eslint-disable-next-line @typescript-eslint/no-shadow
-			setData(data => {
-					return data.map((datum) =>
-						datum.caseID === dragID
-							? {...datum, x: x1, y: y1}
-							: {...datum}
-					)
-				}
-			)
-*/
 			select(this)
 				.transition()
 				.attr('r', defaultRadius)
@@ -81,18 +72,17 @@ export const ScatterDots = (props: {
 					enter.append('circle')
 						.attr('class', 'dot')
 						.attr('transform', props.dots.transform)
-						.attr('class', 'dot')
 						.attr("r", defaultRadius)
-						.attr('cx', props.dots.xScale.range()[1] / 2)
-						.attr('cy', props.dots.yScale.range()[0] / 2)
+						.attr('cx', xScale.range()[1] / 2)
+						.attr('cy', yScale.range()[0] / 2)
 						.property('caseID', (d: any) => d.caseID)
 						.transition()
 						.delay((d: any, i: number) => {
 							return i * delayInterval
 						})
 						.duration(1000)
-						.attr("cx", (d: { x: any; }) => props.dots.xScale(d.x))
-						.attr("cy", (d: { y: any; }) => props.dots.yScale(d.y))
+						.attr("cx", (d: { x: any; }) => xScale(d.x))
+						.attr("cy", (d: { y: any; }) => yScale(d.y))
 						.selection()
 						.append('title')
 						.text((d: any) => `(${float(d.x)}, ${float(d.y)}, caseID: ${d.caseID}`)
@@ -102,9 +92,10 @@ export const ScatterDots = (props: {
 						.call(dragBehavior)
 				},
 				(update) => {
+					console.log(`In update, xDomain = ${xScale.domain()}`)
 					update.classed('dot-highlighted', (d: { selected: boolean }) => (d.selected))
-						.attr('cx', (d: { x: any; }) => props.dots.xScale(d.x))
-						.attr('cy', (d: { y: any; }) => props.dots.yScale(d.y))
+						.attr('cx', (d: { x: any; }) => xScale(d.x))
+						.attr('cy', (d: { y: any; }) => yScale(d.y))
 						.select('title')
 						.text((d: any) => `(${float(d.x)}, ${float(d.y)}, caseID: ${d.caseID}`)
 				},
@@ -114,7 +105,8 @@ export const ScatterDots = (props: {
 						.remove()
 				}
 			)
-	}, [data, props.dots.transform, props.svgRef, props.dots, props.dots.xScale, props.dots.yScale])
+	}, [data, props.dots.transform, props.svgRef, props.dots, xScale, yScale,
+		props.dots.xDomain, props.dots.yDomain])
 
 	return (
 		<g className='dots' ref={ref}/>
