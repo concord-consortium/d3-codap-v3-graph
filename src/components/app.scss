@@ -36,6 +36,10 @@ svg {
   font: 10px sans-serif;
 }
 
+.dots {
+  fill: aqua;
+}
+
 .dot {
   fill: #e89376;
   stroke: white;
@@ -44,6 +48,10 @@ svg {
 
 .dot-highlighted {
   fill: steelblue;
+}
+
+.dragging {
+  cursor: grabbing!important;
 }
 
 .dragRect {

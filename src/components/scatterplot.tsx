@@ -4,7 +4,7 @@ import {drag, format, select} from "d3";
 /* eslint-disable semi */
 
 export const ScatterDots = (props: {
-	svgRef: React.RefObject<SVGSVGElement>, dots: graphingTypes.scatterDotsProps
+	dots: graphingTypes.scatterDotsProps
 }) => {
 	const defaultRadius = 5,
 		dragRadius = 10,
@@ -12,7 +12,11 @@ export const ScatterDots = (props: {
 		[data, setData] = useState(props.dots.scatterData),
 		ref = useRef() as React.RefObject<SVGSVGElement>,
 		xScale = props.dots.xScale,
-		yScale = props.dots.yScale
+		yScale = props.dots.yScale,
+		plotX = xScale.range()[0],
+		plotY = yScale.range()[1],
+		plotWidth = xScale.range()[1] - xScale.range()[0],
+		plotHeight = yScale.range()[0] - yScale.range()[1]
 
 	useEffect(() => {
 		const float = format('.1f')
@@ -32,6 +36,9 @@ export const ScatterDots = (props: {
 						: {...datum}
 				)
 			})
+
+			select(ref.current)
+				.attr('class', 'dragging')
 		}
 
 		function onDrag(event: { dx: number; dy: number; }, d: any) {
@@ -61,8 +68,31 @@ export const ScatterDots = (props: {
 			dragBehavior = drag()
 				.on("start", onDragStart)
 				.on("drag", onDrag)
-				.on("end", onDragEnd)
-		select(ref.current)
+				.on("end", onDragEnd),
+			groupElement = ref.current
+
+		select(groupElement)
+			.selectAll('rect')
+			.data([1])
+			.join(
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				(enter) => {
+					enter.append('rect')
+						.attr('class', 'dots')
+						.attr('transform', props.dots.transform)
+						.attr('x', plotX)
+						.attr('y', plotY)
+						.attr('width', plotWidth)
+						.attr('height', plotHeight)
+				},
+				(update) =>{
+					update.attr('width', plotWidth)
+						.attr('height', plotHeight)
+				}
+			)
+
+		select(groupElement)
 			.selectAll('circle')
 			.data(data, keyFunc)
 			.join(
@@ -92,7 +122,6 @@ export const ScatterDots = (props: {
 						.call(dragBehavior)
 				},
 				(update) => {
-					console.log(`In update, xDomain = ${xScale.domain()}`)
 					update.classed('dot-highlighted', (d: { selected: boolean }) => (d.selected))
 						.attr('cx', (d: { x: any; }) => xScale(d.x))
 						.attr('cy', (d: { y: any; }) => yScale(d.y))
@@ -105,11 +134,10 @@ export const ScatterDots = (props: {
 						.remove()
 				}
 			)
-	}, [data, props.dots.transform, props.svgRef, props.dots, xScale, yScale,
-		props.dots.xDomain, props.dots.yDomain])
+	}, [data, props.dots.transform, props.dots, xScale, yScale, plotX, plotY, plotWidth, plotHeight])
 
 	return (
-		<g className='dots' ref={ref}/>
+		<g ref={ref}/>
 	)
 }
 

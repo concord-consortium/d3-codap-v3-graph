@@ -48,8 +48,6 @@ export function App() {
 			transform: `translate(${margin.left}, 0)`
 		}
 
-	console.log(`In app render xDomain = ${x.domain()}`)
-
 	return (
 		<div className='app' ref={ref}>
 			<h3> Drawing with d3 </h3>
@@ -80,7 +78,6 @@ export function App() {
 				/>
 				{height !== undefined && width !== undefined ? (
 					<ScatterDots
-						svgRef={svgRef}
 						dots={dotsProps}/>
 				) : ''}
 			</svg>
