@@ -12,11 +12,7 @@ export const ScatterDots = (props: {
 		[data, setData] = useState(props.dots.scatterData),
 		ref = useRef() as React.RefObject<SVGSVGElement>,
 		xScale = props.dots.xScale,
-		yScale = props.dots.yScale,
-		plotX = xScale.range()[0],
-		plotY = yScale.range()[1],
-		plotWidth = xScale.range()[1] - xScale.range()[0],
-		plotHeight = yScale.range()[0] - yScale.range()[1]
+		yScale = props.dots.yScale
 
 	useEffect(() => {
 		const float = format('.1f')
@@ -72,27 +68,6 @@ export const ScatterDots = (props: {
 			groupElement = ref.current
 
 		select(groupElement)
-			.selectAll('rect')
-			.data([1])
-			.join(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				(enter) => {
-					enter.append('rect')
-						.attr('class', 'dots')
-						.attr('transform', props.dots.transform)
-						.attr('x', plotX)
-						.attr('y', plotY)
-						.attr('width', plotWidth)
-						.attr('height', plotHeight)
-				},
-				(update) =>{
-					update.attr('width', plotWidth)
-						.attr('height', plotHeight)
-				}
-			)
-
-		select(groupElement)
 			.selectAll('circle')
 			.data(data, keyFunc)
 			.join(
@@ -134,7 +109,7 @@ export const ScatterDots = (props: {
 						.remove()
 				}
 			)
-	}, [data, props.dots.transform, props.dots, xScale, yScale, plotX, plotY, plotWidth, plotHeight])
+	}, [data, props.dots.transform, props.dots, xScale, yScale])
 
 	return (
 		<g ref={ref}/>

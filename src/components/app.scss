@@ -59,3 +59,11 @@ svg {
   fill-opacity: 0.4;
   cursor: grab;
 }
+
+.marquee {
+  fill-opacity: 0;
+  stroke-width: 2;
+  stroke: gray;
+  stroke-dasharray: 5;
+  //border-style: dashed;
+}

@@ -8,6 +8,7 @@ import {Axis} from "./axis";
 import {ScatterDots} from "./scatterplot";
 
 import "./app.scss";
+import {Background} from "./background";
 /* eslint-disable semi */
 
 const
@@ -76,6 +77,8 @@ export function App() {
 								}
 							}
 				/>
+				<Background
+					dots={dotsProps}/>
 				{height !== undefined && width !== undefined ? (
 					<ScatterDots
 						dots={dotsProps}/>

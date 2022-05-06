@@ -70,7 +70,8 @@ export const Axis = (props: { svgRef: React.RefObject<SVGSVGElement>, axisProps:
 						}
 					)
 			}
-		}, [props.axisProps.transform, axis, scale, domain, setDomain, min, max, props.axisProps.length, props.axisProps.orientation]
+		}, [props.axisProps.transform, axis, scale, domain, setDomain, min, max,
+		props.axisProps.length, props.axisProps.orientation]
 	)
 	return (
 		<g className='axis' ref={ref}/>
