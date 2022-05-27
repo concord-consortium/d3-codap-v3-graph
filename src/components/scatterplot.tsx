@@ -1,6 +1,6 @@
 import {graphingTypes} from "./graphing-types";
-import React, {useEffect, useRef, useState} from "react";
-import {drag, format, select} from "d3";
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {format, select} from "d3";
 /* eslint-disable semi */
 
 export const ScatterDots = (props: {
@@ -8,44 +8,50 @@ export const ScatterDots = (props: {
 }) => {
 	const defaultRadius = 5,
 		dragRadius = 10,
-		keyFunc = (d: graphingTypes.worldData) => d.caseID,
-		[data, setData] = useState(props.dots.scatterData),
+		keyFunc = (d: graphingTypes.worldData) => d.id,
+		data = props.dots.scatterData,
+		setData = props.dots.setScatterData,
 		ref = useRef() as React.RefObject<SVGSVGElement>,
 		xScale = props.dots.xScale,
-		yScale = props.dots.yScale
+		yScale = props.dots.yScale,
+		[dragID, setDragID] = useState(-1),
+		[currPos, setCurrPos] = useState({x: 0, y: 0})
 
-	useEffect(() => {
-		const float = format('.1f')
-		let dragID = -1
-
-		function onDragStart(event: any, d: any) {
-			const element = select(this)
+	const onDragStart = useCallback((event: MouseEvent)=> {
+		const element = select(event.target as SVGSVGElement),
+			tItsID = Number(element.property('id'))
+		if (element.node()?.nodeName === 'circle') {
 			element.transition()
 				.attr('r', dragRadius)
 			element.raise()
-			dragID = element.property('caseID')
-			// eslint-disable-next-line @typescript-eslint/no-shadow
-			setData(data => {
-				return data.map((datum) =>
-					datum.caseID === dragID
+			setDragID(()=> tItsID)
+			setCurrPos( () => {
+				return {x: event.clientX, y: event.clientY}
+			})
+			setData(d => {
+				return d.map((datum) =>
+					datum.id === tItsID
 						? {...datum, selected: true}
 						: {...datum}
 				)
 			})
 
-			select(ref.current)
-				.attr('class', 'dragging')
+			element.classed('dragging', true)
 		}
+	}, [setData]),
 
-		function onDrag(event: { dx: number; dy: number; }, d: any) {
-			if (event.dx !== 0 || event.dy !== 0) {
-				const deltaX = props.dots.xScale.invert(event.dx) - props.dots.xScale.invert(0),
-					deltaY = props.dots.yScale.invert(event.dy) - props.dots.yScale.invert(0)
-				// console.log(`dx = ${event.dx}; deltaX = ${deltaX}; d.x = ${d.x}`)
-				// eslint-disable-next-line @typescript-eslint/no-shadow
-				setData(data => {
-						return data.map((datum) =>
-							datum.caseID === dragID
+	onDrag = useCallback((event: MouseEvent)=> {
+		if (dragID >= 0) {
+			const newPos = {x: event.clientX, y: event.clientY},
+				dx = newPos.x - currPos.x,
+				dy = newPos.y - currPos.y
+			setCurrPos( newPos)
+			if (dx !== 0 || dy !== 0) {
+				const deltaX = props.dots.xScale.invert(dx) - props.dots.xScale.invert(0),
+					deltaY = props.dots.yScale.invert(dy) - props.dots.yScale.invert(0)
+				setData(d => {
+						return d.map((datum) =>
+							datum.id === dragID
 								? {...datum, x: datum.x += deltaX, y: datum.y += deltaY}
 								: {...datum}
 						)
@@ -53,18 +59,43 @@ export const ScatterDots = (props: {
 				)
 			}
 		}
+	}, [setData, currPos, dragID, props.dots.xScale, props.dots.yScale]),
 
-		function onDragEnd() {
-			select(this)
+	onDragEnd = useCallback((event: MouseEvent) =>{
+		if (dragID >= 0) {
+			select(event.target as SVGSVGElement)
+				.classed('dragging', false)
 				.transition()
 				.attr('r', defaultRadius)
+			setData(d => {
+				return d.map((datum) =>
+					datum.id === dragID
+						? {...datum, selected: false}
+						: {...datum}
+				)
+			})
+			setDragID(() => -1)
 		}
+	}, [setData, dragID])
+
+	useEffect(()=>
+	{
+		// add event listeners just once
+		addEventListener('mousedown', onDragStart)
+		addEventListener('mousemove', onDrag)
+		addEventListener('mouseup', onDragEnd)
+		// On cleanup, remove event listeners
+		return ()=>{
+			removeEventListener('mousedown', onDragStart)
+			removeEventListener('mousemove', onDrag)
+			removeEventListener('mouseup', onDragEnd)
+		}
+	}, [onDragStart, onDrag, onDragEnd])
+
+	useEffect(() => {
+		const float = format('.1f')
 
 		const delayInterval = 500 / data.length,
-			dragBehavior = drag()
-				.on("start", onDragStart)
-				.on("drag", onDrag)
-				.on("end", onDragEnd),
 			groupElement = ref.current
 
 		select(groupElement)
@@ -80,7 +111,7 @@ export const ScatterDots = (props: {
 						.attr("r", defaultRadius)
 						.attr('cx', xScale.range()[1] / 2)
 						.attr('cy', yScale.range()[0] / 2)
-						.property('caseID', (d: any) => d.caseID)
+						.property('id', (d: any) => d.id)
 						.transition()
 						.delay((d: any, i: number) => {
 							return i * delayInterval
@@ -90,18 +121,15 @@ export const ScatterDots = (props: {
 						.attr("cy", (d: { y: any; }) => yScale(d.y))
 						.selection()
 						.append('title')
-						.text((d: any) => `(${float(d.x)}, ${float(d.y)}, caseID: ${d.caseID}`)
-
-					enter
-						.selectAll('.dot')
-						.call(dragBehavior)
+						.text((d: any) => `(${float(d.x)}, ${float(d.y)}, id: ${d.id}`)
 				},
 				(update) => {
-					update.classed('dot-highlighted', (d: { selected: boolean }) => (d.selected))
+					update.classed('dot-highlighted',
+						(d: { selected: boolean }) => (d.selected))
 						.attr('cx', (d: { x: any; }) => xScale(d.x))
 						.attr('cy', (d: { y: any; }) => yScale(d.y))
 						.select('title')
-						.text((d: any) => `(${float(d.x)}, ${float(d.y)}, caseID: ${d.caseID}`)
+						.text((d: any) => `(${float(d.x)}, ${float(d.y)}, id: ${d.id}`)
 				},
 				(exit) => {
 					exit.transition()
@@ -109,7 +137,8 @@ export const ScatterDots = (props: {
 						.remove()
 				}
 			)
-	}, [data, props.dots.transform, props.dots, xScale, yScale])
+	}, [onDragStart, onDrag, onDragEnd,
+		data, props.dots.transform, props.dots, xScale, yScale])
 
 	return (
 		<g ref={ref}/>

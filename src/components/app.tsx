@@ -1,6 +1,6 @@
 import React, {useRef, useState} from "react";
 import {
-	scaleLinear, range, extent, randomNormal, randomUniform
+	scaleLinear, range, extent, randomNormal
 } from "d3";
 import {useResizeDetector} from 'react-resize-detector';
 import {graphingTypes} from "./graphing-types";
@@ -12,11 +12,11 @@ import {Background} from "./background";
 /* eslint-disable semi */
 
 const
-	playData: graphingTypes.worldData[] = range(1000).map((n) => {
+	playData: graphingTypes.worldData[] = range(10).map((n) => {
 		return {
-			x: randomUniform(0, 200)(),
+			x: n,
 			y: randomNormal(10, 2)(),
-			caseID: n,
+			id: n,
 			selected: false
 		}
 	}),
@@ -40,8 +40,11 @@ export function App() {
 	const [xDomain, setXDomain] = useState(x.domain()),
 		[yDomain, setYDomain] = useState(y.domain()),
 
-		dotsProps: graphingTypes.scatterDotsProps = {
-			scatterData: playData,
+		[data, setData] = useState(playData),
+
+	dotsProps: graphingTypes.scatterDotsProps = {
+			scatterData: data,
+			setScatterData: setData,
 			xScale: x,
 			yScale: y,
 			xDomain,

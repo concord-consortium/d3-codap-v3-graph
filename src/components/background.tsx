@@ -1,6 +1,7 @@
 import {graphingTypes} from "./graphing-types";
 import React, {useEffect, useRef} from "react";
-import {drag, select} from "d3";
+import {drag, select, Selection} from "d3";
+// import {selectCasesInWorldRect} from "../utils/data_utils";
 /* eslint-disable semi */
 
 export const Background = (props: {
@@ -15,11 +16,11 @@ export const Background = (props: {
 		plotHeight = yScale.range()[0] - yScale.range()[1]
 
 	useEffect(() => {
-		let dragRect:any = null,
-			startX:number,
-			startY:number,
-			width:number,
-			height:number
+		let dragRect: Selection<SVGRectElement, unknown, null, undefined> | null,
+			startX: number,
+			startY: number,
+			width: number,
+			height: number
 
 		function onDragStart(event: MouseEvent) {
 			startX = event.x
@@ -35,17 +36,29 @@ export const Background = (props: {
 		}
 
 		function onDrag(event: { dx: number; dy: number; }) {
-			width += event.dx
-			height += event.dy
-			dragRect
-				.attr('x', width < 0 ? startX + width : startX)
-				.attr('y', height < 0 ? startY + height: startY)
-				.attr('width', Math.abs(width))
-				.attr('height', Math.abs(height))
+			if( event.dx !== 0 || event.dy !== 0) {
+				width += event.dx
+				height += event.dy
+				dragRect?.attr('x', width < 0 ? startX + width : startX)
+					.attr('y', height < 0 ? startY + height : startY)
+					.attr('width', Math.abs(width))
+					.attr('height', Math.abs(height))
+
+/*
+				props.dots.setScatterData(
+					selectCasesInWorldRect(props.dots.scatterData,
+						{
+							x: props.dots.xScale.invert(dragRect?.attr('x')),
+							y: props.dots.yScale.invert(dragRect?.attr('y')),
+							width: (props.dots.xScale.invert(dragRect?.attr('width')) - props.dots.xScale.invert(0)),
+							height: (props.dots.yScale.invert(0) - props.dots.yScale.invert(dragRect?.attr('height')))
+						}))
+*/
+			}
 		}
 
 		function onDragEnd() {
-			dragRect.remove()
+			dragRect?.remove()
 			dragRect = null
 		}
 
@@ -53,7 +66,7 @@ export const Background = (props: {
 				.on("start", onDragStart)
 				.on("drag", onDrag)
 				.on("end", onDragEnd),
-		groupElement = ref.current
+			groupElement = ref.current
 
 		select(groupElement)
 			.selectAll('rect')
@@ -71,7 +84,7 @@ export const Background = (props: {
 						.attr('height', plotHeight)
 						.call(dragBehavior)
 				},
-				(update) =>{
+				(update) => {
 					update.attr('width', plotWidth)
 						.attr('height', plotHeight)
 				}

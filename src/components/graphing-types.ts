@@ -1,4 +1,5 @@
 import {ScaleLinear} from "d3";
+import {Dispatch, SetStateAction} from "react";
 
 export namespace graphingTypes {
 	export type axisProps = {
@@ -11,11 +12,16 @@ export namespace graphingTypes {
 	}
 
 	export type worldData = {
-		x: number, y:number, selected: boolean, caseID: number
+		x: number, y:number, selected: boolean, id: number
+	}
+
+	export type worldRect = {
+		x:number, y:number, width:number, height:number
 	}
 
 	export type scatterDotsProps = {
 		scatterData:worldData[],
+		setScatterData: Dispatch<SetStateAction<worldData[]>>,
 		xScale:any,
 		yScale:any,
 		xDomain:number[],
