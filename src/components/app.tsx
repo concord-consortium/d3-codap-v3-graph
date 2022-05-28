@@ -12,7 +12,7 @@ import {Background} from "./background";
 /* eslint-disable semi */
 
 const
-	playData: graphingTypes.worldData[] = range(10).map((n) => {
+	playData: graphingTypes.worldData[] = range(1000).map((n) => {
 		return {
 			x: n,
 			y: randomNormal(10, 2)(),

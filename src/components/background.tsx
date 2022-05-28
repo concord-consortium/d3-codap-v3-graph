@@ -1,6 +1,7 @@
 import {graphingTypes} from "./graphing-types";
 import React, {useEffect, useRef} from "react";
 import {drag, select, Selection} from "d3";
+import {selectCasesInWorldRect} from "../utils/data_utils";
 // import {selectCasesInWorldRect} from "../utils/data_utils";
 /* eslint-disable semi */
 
@@ -44,16 +45,15 @@ export const Background = (props: {
 					.attr('width', Math.abs(width))
 					.attr('height', Math.abs(height))
 
-/*
+				const worldRect = {
+					x: props.dots.xScale.invert(Number(dragRect?.attr('x')) - 60),
+					y: props.dots.yScale.invert(dragRect?.attr('y')),
+					width: (props.dots.xScale.invert(dragRect?.attr('width')) - props.dots.xScale.invert(0)),
+					height: (props.dots.yScale.invert(0) - props.dots.yScale.invert(dragRect?.attr('height')))
+				}
+
 				props.dots.setScatterData(
-					selectCasesInWorldRect(props.dots.scatterData,
-						{
-							x: props.dots.xScale.invert(dragRect?.attr('x')),
-							y: props.dots.yScale.invert(dragRect?.attr('y')),
-							width: (props.dots.xScale.invert(dragRect?.attr('width')) - props.dots.xScale.invert(0)),
-							height: (props.dots.yScale.invert(0) - props.dots.yScale.invert(dragRect?.attr('height')))
-						}))
-*/
+					selectCasesInWorldRect(props.dots.scatterData, worldRect))
 			}
 		}
 

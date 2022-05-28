@@ -13,11 +13,11 @@ export function between(x:number, min:number, max:number) {
 
 export function selectCasesInWorldRect( iData:worldData[], iWorldRect:worldRect) {
 	const tRight = iWorldRect.x + iWorldRect.width,
-		tBottom = iWorldRect.y + iWorldRect.height
-	// console.log(`rect = ${JSON.stringify(iWorldRect)}`)
+		tBottom = iWorldRect.y - iWorldRect.height
+	// console.log(`y: ${iWorldRect.y}; height: ${iWorldRect.height}; bottom: ${tBottom}`)
 	// console.log(`x = ${iWorldRect.x}; y = ${iWorldRect.y}; tRight = ${tRight}; tBottom = ${tBottom}`)
 	return iData.map((d)=>{
-		d.selected = between(d.x, iWorldRect.x, tRight) && between(d.y, iWorldRect.y, tBottom)
+		d.selected = between(d.x, iWorldRect.x, tRight) && between(d.y, tBottom, iWorldRect.y)
 		return d
 	})
 }
