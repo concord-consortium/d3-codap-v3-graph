@@ -1,12 +1,4 @@
 #app {
-  /*
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  */
   align-items: center;
   justify-content: center;
   color: #242424;
@@ -15,7 +7,7 @@
 }
 
 .axis {
-  //background-color: white;
+  background-color: white;
 }
 
 .app {
@@ -37,11 +29,11 @@ svg {
 }
 
 .dots {
-  fill: aqua;
+  fill: white;
 }
 
 .dot {
-  fill: #e89376;
+  fill: rgba(232, 147, 118, 0.85);
   stroke: white;
   cursor: pointer;
 }
@@ -56,7 +48,7 @@ svg {
 
 .dragRect {
   fill: #e38e71;
-  fill-opacity: 0.4;
+  fill-opacity: 0.01;
   cursor: grab;
 }
 

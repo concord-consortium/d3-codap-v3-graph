@@ -80,11 +80,9 @@ export function App() {
 								}
 							}
 				/>
-				<Background
-					dots={dotsProps}/>
+				<Background dots={dotsProps}/>
 				{height !== undefined && width !== undefined ? (
-					<ScatterDots
-						dots={dotsProps}/>
+					<ScatterDots dots={dotsProps}/>
 				) : ''}
 			</svg>
 		</div>
