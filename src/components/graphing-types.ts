@@ -29,4 +29,9 @@ export namespace graphingTypes {
 		transform: string
 	}
 
+	export type pixelRect = {
+		x:number, y:number, width:number, height:number
+	}
+
+
 }

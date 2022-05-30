@@ -17,75 +17,74 @@ export const ScatterDots = (props: {
 		[dragID, setDragID] = useState(-1),
 		[currPos, setCurrPos] = useState({x: 0, y: 0})
 
-	const onDragStart = useCallback((event: MouseEvent)=> {
-		const element = select(event.target as SVGSVGElement),
-			tItsID = Number(element.property('id'))
-		if (element.node()?.nodeName === 'circle') {
-			element.transition()
-				.attr('r', dragRadius)
-			element.raise()
-			setDragID(()=> tItsID)
-			setCurrPos( () => {
-				return {x: event.clientX, y: event.clientY}
-			})
-			setData(d => {
-				return d.map((datum) =>
-					datum.id === tItsID
-						? {...datum, selected: true}
-						: {...datum}
-				)
-			})
-
-			element.classed('dragging', true)
-		}
-	}, [setData]),
-
-	onDrag = useCallback((event: MouseEvent)=> {
-		if (dragID >= 0) {
-			const newPos = {x: event.clientX, y: event.clientY},
-				dx = newPos.x - currPos.x,
-				dy = newPos.y - currPos.y
-			setCurrPos( newPos)
-			if (dx !== 0 || dy !== 0) {
-				const deltaX = props.dots.xScale.invert(dx) - props.dots.xScale.invert(0),
-					deltaY = props.dots.yScale.invert(dy) - props.dots.yScale.invert(0)
+	const onDragStart = useCallback((event: MouseEvent) => {
+			const element = select(event.target as SVGSVGElement),
+				tItsID = Number(element.property('id'))
+			if (element.node()?.nodeName === 'circle') {
+				element.transition()
+					.attr('r', dragRadius)
+				element.raise()
+				setDragID(() => tItsID)
+				setCurrPos(() => {
+					return {x: event.clientX, y: event.clientY}
+				})
 				setData(d => {
-						return d.map((datum) =>
-							datum.id === dragID
-								? {...datum, x: datum.x += deltaX, y: datum.y += deltaY}
-								: {...datum}
-						)
-					}
-				)
+					return d.map((datum) =>
+						datum.id === tItsID
+							? {...datum, selected: true}
+							: {...datum}
+					)
+				})
+
+				element.classed('dragging', true)
 			}
-		}
-	}, [setData, currPos, dragID, props.dots.xScale, props.dots.yScale]),
+		}, [setData]),
 
-	onDragEnd = useCallback((event: MouseEvent) =>{
-		if (dragID >= 0) {
-			select(event.target as SVGSVGElement)
-				.classed('dragging', false)
-				.transition()
-				.attr('r', defaultRadius)
-			setData(d => {
-				return d.map((datum) =>
-					datum.id === dragID
-						? {...datum, selected: false}
-						: {...datum}
-				)
-			})
-			setDragID(() => -1)
-		}
-	}, [setData, dragID])
+		onDrag = useCallback((event: MouseEvent) => {
+			if (dragID >= 0) {
+				const newPos = {x: event.clientX, y: event.clientY},
+					dx = newPos.x - currPos.x,
+					dy = newPos.y - currPos.y
+				setCurrPos(newPos)
+				if (dx !== 0 || dy !== 0) {
+					const deltaX = props.dots.xScale.invert(dx) - props.dots.xScale.invert(0),
+						deltaY = props.dots.yScale.invert(dy) - props.dots.yScale.invert(0)
+					setData(d => {
+							return d.map((datum) =>
+								datum.id === dragID
+									? {...datum, x: datum.x += deltaX, y: datum.y += deltaY}
+									: {...datum}
+							)
+						}
+					)
+				}
+			}
+		}, [setData, currPos, dragID, props.dots.xScale, props.dots.yScale]),
 
-	useEffect(()=>
-	{
+		onDragEnd = useCallback((event: MouseEvent) => {
+			if (dragID >= 0) {
+				select(event.target as SVGSVGElement)
+					.classed('dragging', false)
+					.transition()
+					.attr('r', defaultRadius)
+				setData(d => {
+					return d.map((datum) =>
+						datum.id === dragID
+							? {...datum, selected: false}
+							: {...datum}
+					)
+				})
+				setDragID(() => -1)
+			}
+		}, [setData, dragID])
+
+	useEffect(() => {
 		// add event listeners just once
 		addEventListener('mousedown', onDragStart)
 		addEventListener('mousemove', onDrag)
 		addEventListener('mouseup', onDragEnd)
 		// On cleanup, remove event listeners
-		return ()=>{
+		return () => {
 			removeEventListener('mousedown', onDragStart)
 			removeEventListener('mousemove', onDrag)
 			removeEventListener('mouseup', onDragEnd)
@@ -141,7 +140,7 @@ export const ScatterDots = (props: {
 		data, props.dots.transform, props.dots, xScale, yScale])
 
 	return (
-		<g ref={ref}/>
+			<g ref={ref}/>
 	)
 }
 

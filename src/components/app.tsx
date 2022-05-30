@@ -5,10 +5,11 @@ import {
 import {useResizeDetector} from 'react-resize-detector';
 import {graphingTypes} from "./graphing-types";
 import {Axis} from "./axis";
-import {ScatterDots} from "./scatterplot";
+import {ScatterDots} from "./scatterdots";
 
 import "./app.scss";
 import {Background} from "./background";
+import {Marquee} from "./marquee";
 /* eslint-disable semi */
 
 const
@@ -50,7 +51,8 @@ export function App() {
 			xDomain,
 			yDomain,
 			transform: `translate(${margin.left}, 0)`
-		}
+		},
+		[marqueeRect, setMarqueeRect] = useState({x: 0, y: 0, width: 0, height: 0})
 
 	return (
 		<div className='app' ref={ref}>
@@ -80,10 +82,11 @@ export function App() {
 								}
 							}
 				/>
-				<Background dots={dotsProps}/>
+				<Background dots={dotsProps} marquee={{rect:marqueeRect, setRect: setMarqueeRect}}/>
 				{height !== undefined && width !== undefined ? (
 					<ScatterDots dots={dotsProps}/>
 				) : ''}
+				<Marquee marqueeRect={marqueeRect}/>
 			</svg>
 		</div>
 	)

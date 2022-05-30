@@ -1,22 +1,22 @@
 import {graphingTypes} from "./graphing-types";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 import {drag, select} from "d3";
 import {selectCasesInWorldRect} from "../utils/data_utils";
 // import {selectCasesInWorldRect} from "../utils/data_utils";
 /* eslint-disable semi */
 
 export const Background = (props: {
-	dots: graphingTypes.scatterDotsProps
+	dots: graphingTypes.scatterDotsProps,
+	marquee: { rect: graphingTypes.pixelRect,
+						setRect:  React.Dispatch<React.SetStateAction<graphingTypes.pixelRect>> }
 }) => {
 	const ref = useRef() as React.RefObject<SVGSVGElement>,
-		marqueeRef = useRef() as React.RefObject<SVGSVGElement>,
 		xScale = props.dots.xScale,
 		yScale = props.dots.yScale,
 		plotX = xScale.range()[0],
 		plotY = yScale.range()[1],
 		plotWidth = xScale.range()[1] - xScale.range()[0],
-		plotHeight = yScale.range()[0] - yScale.range()[1],
-		[dragRect, setDragRect] = useState({startX: 0, startY: 0, width: 0, height: 0})
+		plotHeight = yScale.range()[0] - yScale.range()[1]
 
 	useEffect(() => {
 		let startX: number,
@@ -29,18 +29,18 @@ export const Background = (props: {
 			startY = event.y
 			width = 0
 			height = 0
-			setDragRect({startX: event.x, startY: event.y, width: 0, height: 0})
+			props.marquee.setRect({x: event.x, y: event.y, width: 0, height: 0})
 		}
 
 		function onDrag(event: { dx: number; dy: number; }) {
 			if (event.dx !== 0 || event.dy !== 0) {
 				width += event.dx
 				height += event.dy
-				setDragRect({ startX, startY, width, height })
+				props.marquee.setRect({ x:startX, y:startY, width, height })
 
 				const worldRect = {
 					// todo: extract translation from transform
-					x: props.dots.xScale.invert(width < 0 ? startX + width : startX - 60),
+					x: props.dots.xScale.invert((width < 0 ? startX + width : startX) - 60),
 					y: props.dots.yScale.invert(height < 0 ? startY + height : startY),
 					width: (props.dots.xScale.invert(Math.abs(width)) - props.dots.xScale.invert(0)),
 					height: (props.dots.yScale.invert(0) - props.dots.yScale.invert(Math.abs(height)))
@@ -52,7 +52,7 @@ export const Background = (props: {
 		}
 
 		function onDragEnd() {
-			setDragRect({ startX: 0, startY: 0, width: 0, height: 0 })
+			props.marquee.setRect({ x: 0, y: 0, width: 0, height: 0 })
 		}
 
 		const dragBehavior = drag()
@@ -82,29 +82,11 @@ export const Background = (props: {
 						.attr('height', plotHeight)
 				}
 			)
-		select(marqueeRef.current).selectAll('rect')
-			.data([1])
-			.join(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				(enter) => {
-					enter.append('rect')
-						.attr('class', 'marquee')
-				},
-				(update) => {
-					update.attr('x', dragRect.width < 0 ? dragRect.startX + dragRect.width : dragRect.startX)
-						.attr('y', dragRect.height < 0 ? dragRect.startY + dragRect.height : dragRect.startY)
-						.attr('width', Math.abs(dragRect.width))
-						.attr('height', Math.abs(dragRect.height))
-						.raise()
-				}
-			)
-	}, [props.dots.transform, props.dots, xScale, yScale, plotX, plotY, plotWidth, plotHeight, dragRect])
+	}, [props.dots.transform, props.dots, props.marquee, xScale, yScale, plotX, plotY, plotWidth, plotHeight])
 
 	return (
 		<g>
 			<g ref={ref}/>
-			<g ref={marqueeRef}/>
 		</g>
 	)
 }

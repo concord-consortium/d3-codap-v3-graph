@@ -53,9 +53,14 @@ svg {
 }
 
 .marquee {
-  fill-opacity: 0;
+  fill: none;
   stroke-width: 2;
   stroke: gray;
   stroke-dasharray: 5;
-  //border-style: dashed;
+}
+
+.marqueeBack {
+  fill: none;
+  stroke-width: 2;
+  stroke: white;
 }
