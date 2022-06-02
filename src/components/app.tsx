@@ -13,7 +13,7 @@ import {Marquee} from "./marquee";
 /* eslint-disable semi */
 
 const
-	playData: graphingTypes.worldData[] = range(1000).map((n) => {
+	playData: graphingTypes.worldData[] = range(100).map((n) => {
 		return {
 			x: n,
 			y: randomNormal(10, 2)(),
@@ -83,9 +83,11 @@ export function App() {
 							}
 				/>
 				<Background dots={dotsProps} marquee={{rect:marqueeRect, setRect: setMarqueeRect}}/>
+
 				{height !== undefined && width !== undefined ? (
 					<ScatterDots dots={dotsProps}/>
 				) : ''}
+
 				<Marquee marqueeRect={marqueeRect}/>
 			</svg>
 		</div>

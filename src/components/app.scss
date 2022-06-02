@@ -16,16 +16,21 @@
 }
 
 svg {
-  display: block;
+  //display: block;
   width: 100vw;
   height: 100vh;
-  background: rgba(247, 247, 247, 0.4);
-  overflow: visible;
+  //background: rgba(250, 166, 166, 0.4);
+  overflow: hidden;
+  //position: relative;
 }
 
 .d3Drawing text {
   fill: black;
   font: 10px sans-serif;
+}
+
+.plotArea {
+  background: white;
 }
 
 .dots {

@@ -11,11 +11,16 @@ export const ScatterDots = (props: {
 		keyFunc = (d: graphingTypes.worldData) => d.id,
 		data = props.dots.scatterData,
 		setData = props.dots.setScatterData,
-		ref = useRef() as React.RefObject<SVGSVGElement>,
+		plotAreaSVGRef = useRef() as React.RefObject<SVGSVGElement>,
+		dotsRef = useRef() as React.RefObject<SVGSVGElement>,
 		xScale = props.dots.xScale,
 		yScale = props.dots.yScale,
 		[dragID, setDragID] = useState(-1),
-		[currPos, setCurrPos] = useState({x: 0, y: 0})
+		[currPos, setCurrPos] = useState({x: 0, y: 0}),
+		plotX = xScale.range()[0],
+		plotY = yScale.range()[1],
+		plotWidth = xScale.range()[1] - xScale.range()[0],
+		plotHeight = yScale.range()[0] - yScale.range()[1]
 
 	const onDragStart = useCallback((event: MouseEvent) => {
 			const element = select(event.target as SVGSVGElement),
@@ -95,9 +100,16 @@ export const ScatterDots = (props: {
 		const float = format('.1f')
 
 		const delayInterval = 500 / data.length,
-			groupElement = ref.current
+			dotsSvgElement = dotsRef.current
 
-		select(groupElement)
+		select(plotAreaSVGRef.current)
+			// .attr('transform', props.dots.transform)
+			.attr('x', plotX + 60)
+			.attr('y', plotY)
+			.attr('width', plotWidth)
+			.attr('height', plotHeight)
+
+		select(dotsSvgElement)
 			.selectAll('circle')
 			.data(data, keyFunc)
 			.join(
@@ -106,7 +118,7 @@ export const ScatterDots = (props: {
 				(enter) => {
 					enter.append('circle')
 						.attr('class', 'dot')
-						.attr('transform', props.dots.transform)
+						// .attr('transform', props.dots.transform)
 						.attr("r", defaultRadius)
 						.attr('cx', xScale.range()[1] / 2)
 						.attr('cy', yScale.range()[0] / 2)
@@ -115,7 +127,7 @@ export const ScatterDots = (props: {
 						.delay((d: any, i: number) => {
 							return i * delayInterval
 						})
-						.duration(1000)
+						.duration(100)
 						.attr("cx", (d: { x: any; }) => xScale(d.x))
 						.attr("cy", (d: { y: any; }) => yScale(d.y))
 						.selection()
@@ -137,10 +149,12 @@ export const ScatterDots = (props: {
 				}
 			)
 	}, [onDragStart, onDrag, onDragEnd,
-		data, props.dots.transform, props.dots, xScale, yScale])
+		data, props.dots.transform, props.dots, xScale, yScale, plotX, plotY, plotWidth, plotHeight])
 
 	return (
-			<g ref={ref}/>
+			<svg ref={plotAreaSVGRef} className='plotArea'>
+				<svg ref={dotsRef} />
+			</svg>
 	)
 }
 
