@@ -20,4 +20,11 @@ export function selectCasesInWorldRect( iData:worldData[], iWorldRect:worldRect)
 	})
 }
 
+export function clearSelection( iData:worldData[]) {
+	return iData.map((d)=>{
+		d.selected = false
+		return d
+	})
+}
+
 /* eslint-enable semi */

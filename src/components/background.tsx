@@ -1,14 +1,16 @@
 import {graphingTypes} from "./graphing-types";
-import React, {useEffect, useRef} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {drag, select} from "d3";
-import {selectCasesInWorldRect} from "../utils/data_utils";
+import {clearSelection, selectCasesInWorldRect} from "../utils/data_utils";
 // import {selectCasesInWorldRect} from "../utils/data_utils";
 /* eslint-disable semi */
 
 export const Background = (props: {
 	dots: graphingTypes.scatterDotsProps,
-	marquee: { rect: graphingTypes.pixelRect,
-						setRect:  React.Dispatch<React.SetStateAction<graphingTypes.pixelRect>> }
+	marquee: {
+		rect: graphingTypes.pixelRect,
+		setRect: React.Dispatch<React.SetStateAction<graphingTypes.pixelRect>>
+	}
 }) => {
 	const ref = useRef() as React.RefObject<SVGSVGElement>,
 		xScale = props.dots.xScale,
@@ -16,27 +18,25 @@ export const Background = (props: {
 		plotX = xScale.range()[0],
 		plotY = yScale.range()[1],
 		plotWidth = xScale.range()[1] - xScale.range()[0],
-		plotHeight = yScale.range()[0] - yScale.range()[1]
-
-	useEffect(() => {
-		let startX: number,
-			startY: number,
-			width: number,
-			height: number
-
-		function onDragStart(event: MouseEvent) {
-			startX = event.x
-			startY = event.y
-			width = 0
-			height = 0
+		plotHeight = yScale.range()[0] - yScale.range()[1],
+		[startX, setStartX] = useState(0),
+		[startY, setStartY] = useState(0),
+		[width, setWidth] = useState(0),
+		[height, setHeight] = useState(0),
+		onDragStart = useCallback((event: MouseEvent) => {
+			setStartX(event.x)
+			setStartY(event.y)
+			setWidth(0)
+			setHeight(0)
 			props.marquee.setRect({x: event.x, y: event.y, width: 0, height: 0})
-		}
+			props.dots.setScatterData(clearSelection(props.dots.scatterData))
+		}, [props.dots, props.marquee]),
 
-		function onDrag(event: { dx: number; dy: number; }) {
+		onDrag = useCallback((event: { dx: number; dy: number; }) => {
 			if (event.dx !== 0 || event.dy !== 0) {
-				width += event.dx
-				height += event.dy
-				props.marquee.setRect({ x:startX, y:startY, width, height })
+				setWidth(width + event.dx)
+				setHeight(height + event.dy)
+				props.marquee.setRect({x: startX, y: startY, width, height})
 
 				const worldRect = {
 					// todo: extract translation from transform
@@ -49,12 +49,14 @@ export const Background = (props: {
 				props.dots.setScatterData(
 					selectCasesInWorldRect(props.dots.scatterData, worldRect))
 			}
-		}
+		}, [height, props.dots, props.marquee, startX, startY, width]),
 
-		function onDragEnd() {
-			props.marquee.setRect({ x: 0, y: 0, width: 0, height: 0 })
-		}
+		onDragEnd = useCallback(() => {
+			props.marquee.setRect({x: 0, y: 0, width: 0, height: 0})
+		}, [props.marquee])
 
+
+	useEffect(() => {
 		const dragBehavior = drag()
 				.on("start", onDragStart)
 				.on("drag", onDrag)
@@ -82,7 +84,8 @@ export const Background = (props: {
 						.attr('height', plotHeight)
 				}
 			)
-	}, [props.dots.transform, props.dots, props.marquee, xScale, yScale, plotX, plotY, plotWidth, plotHeight])
+	}, [props.dots.transform, props.dots, props.marquee, xScale, yScale, plotX, plotY, plotWidth, plotHeight,
+		height, startX, startY, width, onDragStart, onDrag, onDragEnd])
 
 	return (
 		<g>

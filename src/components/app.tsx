@@ -13,7 +13,7 @@ import {Marquee} from "./marquee";
 /* eslint-disable semi */
 
 const
-	playData: graphingTypes.worldData[] = range(100).map((n) => {
+	playData: graphingTypes.worldData[] = range(10).map((n) => {
 		return {
 			x: n,
 			y: randomNormal(10, 2)(),

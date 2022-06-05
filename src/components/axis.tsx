@@ -74,8 +74,12 @@ export const Axis = (props: { svgRef: React.RefObject<SVGSVGElement>, axisProps:
 		}
 	}, [props.axisProps.transform, axis, scale, domain, setDomain, min, max,
 		props.axisProps.length, props.axisProps.orientation, bbox.x, bbox.y, bbox.width, bbox.height])
+
 	// Title
 	useEffect(() => {
+		const tX = (props.axisProps.orientation === 'bottom') ? (max - min)/2 : (max - min)/2,
+			tY = props.axisProps.orientation === 'bottom' ? bbox.height + 10 : bbox.x - 5,
+			tRotation = props.axisProps.orientation === 'bottom' ? '' : 'rotate(-90)'
 		select(titleRef.current)
 			.selectAll('text.axis-title')
 			.data([1])
@@ -90,12 +94,12 @@ export const Axis = (props: { svgRef: React.RefObject<SVGSVGElement>, axisProps:
 				},
 				(update) => {
 					update
-						.attr('transform', props.axisProps.transform)
-						.attr('x', (max - min) / 2)
-						.attr('y', bbox.height + 10)
+						.attr('transform', props.axisProps.transform + ' ' + tRotation)
+						.attr('x', tX)
+						.attr('y', tY)
 				})
 
-	}, [max, min, bbox.x, bbox.y, bbox.width, bbox.height, props.axisProps.transform])
+	}, [max, min, bbox.x, bbox.y, bbox.width, bbox.height, props.axisProps.transform, props.axisProps.orientation])
 
 	return (
 		<g>

@@ -56,7 +56,7 @@ export const ScatterDots = (props: {
 						deltaY = props.dots.yScale.invert(dy) - props.dots.yScale.invert(0)
 					setData(d => {
 							return d.map((datum) =>
-								datum.id === dragID
+								datum.selected
 									? {...datum, x: datum.x += deltaX, y: datum.y += deltaY}
 									: {...datum}
 							)
@@ -72,16 +72,9 @@ export const ScatterDots = (props: {
 					.classed('dragging', false)
 					.transition()
 					.attr('r', defaultRadius)
-				setData(d => {
-					return d.map((datum) =>
-						datum.id === dragID
-							? {...datum, selected: false}
-							: {...datum}
-					)
-				})
 				setDragID(() => -1)
 			}
-		}, [setData, dragID])
+		}, [dragID])
 
 	useEffect(() => {
 		// add event listeners just once
